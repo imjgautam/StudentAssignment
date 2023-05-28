@@ -11,6 +11,6 @@ router.get('/filter', student.filterStudents);
 
 // routes for json 
 router.get('/all', student.getAllStudentsFromJson);
-
+router.get('/jsonfilter', student.filterStudentsFromJson)
 
 module.exports = router;

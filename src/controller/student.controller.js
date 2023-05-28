@@ -164,7 +164,7 @@ exports.getAllStudentsFromJson = async (req, res) => {
     
     const data = fs.readFileSync(path.join(__dirname, '../json/student_data.json'));
     const students = JSON.parse(data);
-    
+
     const paginatedStudents = students.slice(offset, offset + pageSize);
     const totalCount = students.length;
 
@@ -183,3 +183,47 @@ exports.getAllStudentsFromJson = async (req, res) => {
   }
 };
 
+
+exports.filterStudentsFromJson = async (req, res) => {
+    const { page, pageSize, student_name, total_marks } = req.body;
+    const offset = (page - 1) * pageSize;
+  
+    try {
+      const data = fs.readFileSync(path.join(__dirname, '../json/student_data.json'));
+      const students = JSON.parse(data);
+  
+      let filteredStudents = students;
+      if (student_name) {
+        const lowercaseName = student_name.toLowerCase();
+        filteredStudents = filteredStudents.filter(student => student.student_name.toLowerCase().includes(lowercaseName));
+      }
+      if (total_marks) {
+        filteredStudents = filteredStudents.filter(student => student.total_marks === total_marks);
+      }
+  
+      const totalCount = filteredStudents.length;
+      if(totalCount == 0)
+      {
+        return res.status(200).json({
+            success: false,
+            message: "Students not found",
+            totalCount,
+          });
+      }
+  
+      const paginatedStudents = filteredStudents.slice(offset, offset + pageSize);
+  
+      return res.status(200).json({
+        success: true,
+        data: paginatedStudents,
+        totalCount,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: 'Something went wrong',
+        error: error.message,
+      });
+    }
+  };
+  
