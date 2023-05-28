@@ -11,7 +11,8 @@
 
 | Parameter | Type     | Description                |
 | :-------- | :------- | :------------------------- |
-| `req.query` | `string` | **Required**. Page and PageSize required in query |
+| `page` | `string` | **Required**. Page and PageSize required in req.query |
+| `pageSize` | `string` | **Required**. Page and PageSize required in req.query |
 
 #### Filter students 
 
