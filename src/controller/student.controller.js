@@ -1,7 +1,9 @@
 const db = require('../model/index');
 const student = db.students;
+const fs = require('fs');
 const { Op } = require('sequelize');
-
+const path = require('path')
+// functions for postgres db
 exports.newStudent = async (req, res) => {
   const { student_name, total_marks } = req.body;
   try {
@@ -151,4 +153,33 @@ exports.filterStudents = async (req, res) => {
       });
     }
 };
-  
+ 
+// functions for json
+
+exports.getAllStudentsFromJson = async (req, res) => {
+  const { page, pageSize } = req.query;
+  const offset = (page - 1) * pageSize;
+
+  try {
+    
+    const data = fs.readFileSync(path.join(__dirname, '../json/student_data.json'));
+    const students = JSON.parse(data);
+    
+    const paginatedStudents = students.slice(offset, offset + pageSize);
+    const totalCount = students.length;
+
+    return res.status(200).json({
+      success: true,
+      data: paginatedStudents,
+      totalCount,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: 'Something went wrong',
+      error: error.message,
+    });
+  }
+};
+
